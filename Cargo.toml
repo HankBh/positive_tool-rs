@@ -1,0 +1,9 @@
+[package]
+name = "ptrs"
+version = "0.2.0"
+edition = "2024"
+
+[dependencies]
+log = "0.4.28"
+log4rs = { version = "1.4.0", features = [] }
+colored = "3.0.0"
