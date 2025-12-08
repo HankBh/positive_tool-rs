@@ -12,3 +12,12 @@
 
 - build_logger return Result now.
 - build_logger的console_logger時間部分有顏色
+
+## 0.3.0
+
+**BREAKING UPDATE**
+
+### 更改
+
+- 模組匯入方式
+- 日志顏色

@@ -1,4 +1,4 @@
-//! pt rust version
+//! ptrs 一個好用的工具
 
 use log4rs;
 use std::env;
@@ -16,7 +16,7 @@ use std::vec::Vec;
 ///  範例：
 /// ```rust, no_run
 /// //NOTICE! this test can NOT run as doctest.It will be failed when running as doctest with cargo cause doctest doas not run under project path
-/// use ptrs::*;
+/// use ptrs::ptrs::*;
 ///
 /// assert_eq!(
 ///            find_project_root_path(env!("CARGO_PKG_NAME"))
@@ -128,8 +128,13 @@ pub fn build_logger(log_file_path: PathBuf) -> io::Result<()> {
     // 建立 ConsoleHandler (終端輸出)
     // ----------------------------------------------------
     let console_pattern: String = format!(
-        "[\x1b[{}m{{d(%Y-%m-%d %H:%M:%S)}}\x1b[{}m] | {{l}} | [{{f}}:{{L}}::{{M}}] | {{m}}{{n}}",
+        "\x1b[{}m[{{d(%Y-%m-%d %H:%M:%S)}}]\x1b[{}m | {{l}} | \x1b[{}m[\x1b[{}m{{f}}\x1b[{}m:{{L}}::{{M}}\x1b[{}m]\x1b[{}m | {{m}}{{n}}",
         Color::to_fg_str(&Color::Green),
+        Color::to_fg_str(&Color::White),
+        Color::to_fg_str(&Color::Cyan),
+        Color::to_fg_str(&Color::Magenta),
+        Color::to_fg_str(&Color::Yellow),
+        Color::to_fg_str(&Color::Cyan),
         Color::to_fg_str(&Color::White),
     );
     /*
