@@ -5,7 +5,6 @@ version = "0.5.0"
 edition = "2024"
 description = "`ptrs`一個rust的工具"
 license = "AGPL v3"
-license-file = "LICENSE"
 
 [dependencies]
 log = { version = "0.4.28" }
