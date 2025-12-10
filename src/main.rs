@@ -10,7 +10,9 @@ fn main() {
         .unwrap();
     let test_tmp_file_path: std::path::PathBuf =
         project_path.clone().join("tmp_test_build_logger.log");
-    ptrs::build_logger(test_tmp_file_path.clone()).ok().unwrap();
+    ptrs::build_logger(test_tmp_file_path.clone(), None)
+        .ok()
+        .unwrap();
     trace!("{}的測試日志<追蹤>", PROJECT_NAME);
     debug!("{}的測試日志<除錯>", PROJECT_NAME);
     info!("{}的測試日志<資訊>", PROJECT_NAME);

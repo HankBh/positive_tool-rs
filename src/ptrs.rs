@@ -1,11 +1,10 @@
-//! ptrs 一個好用的工具
+//! ptrs 一個rust的工具
 
+use colored::Color;
 use log4rs;
 use std::env;
 use std::ffi::OsStr;
 use std::io;
-//use std::io::{self, Error, ErrorKind};
-use colored::Color;
 use std::path::PathBuf;
 use std::vec::Vec;
 
@@ -46,9 +45,9 @@ pub fn find_project_root_path(project_name: &str) -> io::Result<PathBuf> {
     }
     //
     let mut project_path: PathBuf = exe_file_path;
-    let mut project_path_count: u64 = 1;
+    let mut project_path_count: u8 = 1;
     let mut project_path_log: Vec<PathBuf> = Vec::new();
-    let max_dir_level: u64 = 10;
+    let max_dir_level: u8 = 10;
     let mut tmp_filename: &OsStr;
     //
     loop {
@@ -94,7 +93,10 @@ pub fn find_project_root_path(project_name: &str) -> io::Result<PathBuf> {
 /// ```rust, ignore
 /// io::Result<()>
 /// ```
-pub fn build_logger(log_file_path: PathBuf) -> io::Result<()> {
+pub fn build_logger(
+    log_file_path: PathBuf,
+    release_log_file_level: Option<log::LevelFilter>,
+) -> io::Result<()> {
     let file_pattern: &str = "[{d(%Y-%m-%d %H:%M:%S)}] | {T} | {l} | [{f}:{L}::{M}] | {m}{n}";
 
     // ----------------------------------------------------
@@ -150,13 +152,36 @@ pub fn build_logger(log_file_path: PathBuf) -> io::Result<()> {
             &console_pattern,
         )))
         .build();
-    // ----------------------------------------------------
-    // 建立總配置 Config
-    // ----------------------------------------------------
+    // 建立總設定 Config
+    let mut prepare_config_file_filter: Box<log4rs::filter::threshold::ThresholdFilter>;
+    prepare_config_file_filter = Box::new(log4rs::filter::threshold::ThresholdFilter::new(
+        log::LevelFilter::Info,
+    ));
+    #[cfg(debug_assertions)]
+    {
+        prepare_config_file_filter = Box::new(log4rs::filter::threshold::ThresholdFilter::new(
+            log::LevelFilter::Trace,
+        ));
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        match release_log_file_level {
+            Some(i) => {
+                prepare_config_file_filter =
+                    Box::new(log4rs::filter::threshold::ThresholdFilter::new(i));
+            }
+            _ => {}
+        }
+    }
+    //
     let config = log4rs::config::Config::builder()
         // 註冊檔案 appender
-        .appender(log4rs::config::Appender::builder().build("file_logger", Box::new(file_appender)))
-        // 註冊終端 appender，並加入 ThresholdFilter (只允許 WARNING 以上)
+        .appender(
+            log4rs::config::Appender::builder()
+                .filter(prepare_config_file_filter)
+                .build("file_logger", Box::new(file_appender)),
+        )
+        // 註冊終端 appender
         .appender(
             log4rs::config::Appender::builder()
                 .filter(Box::new(log4rs::filter::threshold::ThresholdFilter::new(
@@ -211,7 +236,7 @@ mod tests {
             .ok()
             .unwrap()
             .join("tmp_test_build_logger.log");
-        build_logger(test_tmp_file_path.clone()).ok().unwrap();
+        build_logger(test_tmp_file_path.clone(), None).ok().unwrap();
         trace!("測試日志<追蹤>");
         debug!("測試日志<除錯>");
         info!("測試日志<資訊>");
