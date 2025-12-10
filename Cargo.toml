@@ -1,7 +1,9 @@
 [package]
-name = "ptrs"
-version = "0.4.0"
+name = "positive_tool"
+version = "0.5.0"
 edition = "2024"
+description = "`ptrs`一個rust的工具"
+license = "AGPL v3"
 
 [dependencies]
 log = "0.4.28"
